@@ -4,8 +4,6 @@ interface Props {
 }
 
 export default function SendRequestButton({message, callback}: Props) {
-
-
     return (
         <button
         onClick={callback}>

@@ -14,7 +14,7 @@ export default class Wifi {
     static async connect(expectedSSID: string): Promise<Wifi> {
         if (Wifi.instance) return Wifi.instance;
 
-        const status: any = await GetPermissions.requestForegroundPermissionsAsync();
+        const { status } = await GetPermissions.requestForegroundPermissionsAsync();
         if (status !== "granted") throw new NoPermissionsGranted();
         else {
             return WifiManager.getCurrentWifiSSID()
@@ -32,32 +32,3 @@ export default class Wifi {
 
     }
 }
-
-/*
- if (!singletonInstance) {
-            GetPermissions.requestForegroundPermissionsAsync()
-                .then((): void => {
-                    WifiManager.getCurrentWifiSSID()
-                        .then((currentSSID: string): void => {
-                            if (currentSSID !== wifiName) {
-                                this.wifi = {
-                                    ssid: currentSSID,
-                                    isConnected: false
-                                };
-                            } else {
-                                this.wifi = {
-                                    ssid: currentSSID,
-                                    isConnected: true
-                                };
-                                throw new WifiNotConnected();
-                            }
-                        });
-                })
-                .catch((): never => {
-                    throw new NoPermissionsGranted();
-                });
-        }
-        else {
-            throw new SingletonAlreadyExist();
-        }
- */
