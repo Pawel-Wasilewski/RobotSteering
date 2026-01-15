@@ -5,16 +5,13 @@ import EstablishConnection from "@/app/api/serverCommunication/establishConnecti
 import Wifi from "@/app/api/serverConnection/Wifi";
 import WifiLock from "@/app/api/serverConnection/WifiLock";
 import SendRequestButton from "@/app/comps/SendRequestButton";
+import CommandSuite from "@/app/api/serverCommunication/CommandSuite";
 
 export default function Index() {
     const [SSID, setSSID] = useState<string | null>(null);
     const [connection, setConnection] = useState<boolean>(false);
     const successfullyConnectedMessage: string = "Connected to robot's WiFi network."
-
-    const sendTestPackets = (): void => {
-
-    }
-
+    const commands: CommandSuite = new CommandSuite()
 
     useEffect(() => {
         const RobotWiFiSSID = "Robot_WiFi_Network";
@@ -64,7 +61,7 @@ export default function Index() {
         >
             <Text>
                 {SSID ? (SSID === successfullyConnectedMessage ?
-                    <SendRequestButton message={"send test packets"} callback={sendTestPackets}/> : SSID) : "Connecting to WiFi..."}
+                    <SendRequestButton buttonActionName={"send test packets"} callback={commands.testConnection}/> : SSID) : "Connecting to WiFi..."}
             </Text>
         </View>
     );

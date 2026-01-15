@@ -1,4 +1,6 @@
+import typeOfCommand from "@/app/api/serverCommunication/interfaces/TypeOfCommand";
+
 export default interface WSPayloadDTO {
-    event: string;
+    event: typeOfCommand;
     data: any;
 }

@@ -1,12 +1,12 @@
 interface Props {
-    message: string;
+    buttonActionName: string;
     callback: (...args: any[]) => any;
 }
 
-export default function SendRequestButton({message, callback}: Props) {
+export default function SendRequestButton({buttonActionName, callback}: Props) {
     return (
         <button
         onClick={callback}>
-            {message}</button>
+            {buttonActionName}</button>
     );
 }
