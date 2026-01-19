@@ -29,6 +29,5 @@ export default class Wifi {
                     throw new WifiNotConnected();
                 })
         }
-
     }
 }

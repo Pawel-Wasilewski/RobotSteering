@@ -25,9 +25,6 @@
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_WIFI_STATE",
-        "android.permission.ACCESS_FINE_LOCATION",
-        "ACCESS_FINE_LOCATION",
-        "ACCESS_WIFI_STATE",
         "android.permission.ACCESS_FINE_LOCATION"
       ],
       "adaptiveIcon": {
@@ -63,6 +60,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "37d068ae-8622-4cd1-94c7-aaadadbf56c0"
+      }
     }
   }
 }
