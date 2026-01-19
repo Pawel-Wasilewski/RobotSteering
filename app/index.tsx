@@ -15,10 +15,10 @@ export default function Index() {
     const [connection, setConnection] = useState<boolean>(false);
     const successfullyConnectedMessage: string = "Connected to robot's WiFi network.";
     const commands: CommandSuite = useMemo((): CommandSuite => new CommandSuite(), []);
-    const webSocketURL: string = useMemo((): string => {
-        const JSON: WebSocketConfigDTO = require("./websocketConfig.json");
-        return JSON.websocketRoute
-    }, []);
+
+    const config: WebSocketConfigDTO = require("./websocketConfig.json");
+    const webSocketURL: string = config.websocketRoute;
+
 
     useEffect((): () => void => {
         let killGuard: boolean = false;
