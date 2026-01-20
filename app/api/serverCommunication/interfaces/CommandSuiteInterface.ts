@@ -3,7 +3,7 @@ import MovementTypes from "@/app/api/serverCommunication/interfaces/MovementType
 export default interface CommandSuiteInterface {
     testConnection(): boolean;
     move(direction: MovementTypes): boolean;
-    killConnection(): boolean;
+    killConnection(connectionStatus: boolean): boolean;
     openTrashCan(idOfTrashLid: number): boolean;
     closeTrashCan(idOfTrashLid: number): boolean;
 }

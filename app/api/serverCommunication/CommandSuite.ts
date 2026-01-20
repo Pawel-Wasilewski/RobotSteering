@@ -3,6 +3,7 @@ import EstablishConnection from "@/app/api/serverCommunication/establishConnecti
 import TypeOfCommand from "@/app/api/serverCommunication/interfaces/TypeOfCommand";
 import MovementTypes from "@/app/api/serverCommunication/interfaces/MovementTypes";
 import WSPayloadDTO from "@/app/api/serverCommunication/interfaces/WSPayloadDTO";
+import ConnectionDoesntExist from "@/app/errors/ConnectionDoesntExist";
 
 export default class CommandSuite implements CommandSuiteInterface {
     testConnection(): boolean {
@@ -22,9 +23,12 @@ export default class CommandSuite implements CommandSuiteInterface {
         EstablishConnection.getInstance().sendPayload(payloadData);
         return true;
     }
-    killConnection(): boolean {
-        EstablishConnection.getInstance().killCommunication();
-        return true;
+    killConnection(connectionStatus: boolean): boolean {
+        if (connectionStatus) {
+            EstablishConnection.getInstance().killCommunication();
+            return true;
+        }
+        else throw new ConnectionDoesntExist();
     }
     openTrashCan(idOfTrashLid: number): boolean {
         EstablishConnection.getInstance().sendPayload({

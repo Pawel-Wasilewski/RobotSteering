@@ -8,21 +8,20 @@ import SendRequestButton from "@/app/comps/SendRequestButton";
 import CommandSuite from "@/app/api/serverCommunication/CommandSuite";
 import LockingSSIDFailed from "@/app/errors/LockingSSIDFailed";
 import MovementTypes from "@/app/api/serverCommunication/interfaces/MovementTypes";
-import WebSocketConfigDTO from "@/app/comps/Interfaces/WebSocketConfigDTO";
+import config from "./websocketConfig.json";
+import ButtonColors from "@/app/comps/Interfaces/ButtonColors";
 
 export default function Index() {
     const [SSID, setSSID] = useState<string | null>(null);
     const [connection, setConnection] = useState<boolean>(false);
     const successfullyConnectedMessage: string = "Connected to robot's WiFi network.";
     const commands: CommandSuite = useMemo((): CommandSuite => new CommandSuite(), []);
-
-    const config: WebSocketConfigDTO = require("./websocketConfig.json");
     const webSocketURL: string = config.websocketRoute;
+    const robotsWifi: string = config.robotsWifiSSID;
 
 
     useEffect((): () => void => {
         let killGuard: boolean = false;
-        const RobotWiFiSSID = "Robot_WiFi_Network";
 
         const killProcess: () => void = (): void => {
             console.error(new ConnectionWithRobotInterrupted().message);
@@ -31,7 +30,7 @@ export default function Index() {
         }
 
         // INITIALIZATION
-        Wifi.connect(RobotWiFiSSID)
+        Wifi.connect(robotsWifi)
             .then((wifiInstance: Wifi): void => {
                 if (killGuard) return;
                 if (!wifiInstance.isConnected) {
@@ -41,7 +40,7 @@ export default function Index() {
                 setSSID(successfullyConnectedMessage);
 
                 // LOCK IT
-                WifiLock.lockToSSID(RobotWiFiSSID, killProcess)
+                WifiLock.lockToSSID(robotsWifi, killProcess)
                     .then((): void => {
                         // ESTABLISH CONNECTION
                         EstablishConnection.getInstance().connect(webSocketURL);
@@ -62,7 +61,7 @@ export default function Index() {
             EstablishConnection.getInstance().killCommunication();
             setConnection(false);
         };
-    }, [webSocketURL]);
+    }, [webSocketURL, robotsWifi]);
 
 
     return (
@@ -73,8 +72,9 @@ export default function Index() {
                 alignItems: "center",
             }}>
             <SendRequestButton
-                buttonActionName={"Move Forward"}
-                callback={(): boolean => commands.move(MovementTypes.FORWARD)}/>
+                buttonTitle={"Forward"}
+                buttonColor={ButtonColors.SERVO_ACTION}
+                onPress={(): boolean => commands.move(MovementTypes.FORWARD)}/>
             <View
                 style={{
                     flexDirection: "row",
@@ -83,18 +83,38 @@ export default function Index() {
                     alignItems: "center",
                 }}>
                 <SendRequestButton
-                    buttonActionName={"Move Left"}
-                    callback={(): boolean => commands.move(MovementTypes.LEFT)}/>
+                    buttonTitle={"Left"}
+                    buttonColor={ButtonColors.SERVO_ACTION}
+                    onPress={() => commands.move(MovementTypes.LEFT)}/>
                 <SendRequestButton
-                    buttonActionName={"Stop"}
-                    callback={(): boolean => commands.move(MovementTypes.STOP)}/>
+                    buttonTitle={"Stop"}
+                    buttonColor={ButtonColors.SERVO_ACTION}
+                    onPress={() => commands.move(MovementTypes.STOP)}/>
                 <SendRequestButton
-                    buttonActionName={"Move Right"}
-                    callback={(): boolean => commands.move(MovementTypes.RIGHT)}/>
+                    buttonTitle={"Right"}
+                    buttonColor={ButtonColors.SERVO_ACTION}
+                    onPress={() => commands.move(MovementTypes.RIGHT)}/>
             </View>
             <SendRequestButton
-                buttonActionName={"Move Backward"}
-                callback={(): boolean => commands.move(MovementTypes.BACKWARD)}/>
+                buttonTitle={"Backward"}
+                buttonColor={ButtonColors.SERVO_ACTION}
+                onPress={() => commands.move(MovementTypes.BACKWARD)}/>
+            <View
+                style={{
+                    flexDirection: "row",
+                    marginTop: 40,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}>
+                <SendRequestButton
+                    buttonTitle={"Test Connection"}
+                    buttonColor={ButtonColors.SERVER_TEST}
+                    onPress={() => commands.testConnection()}/>
+                <SendRequestButton
+                    buttonTitle={"Kill Connection"}
+                    buttonColor={ButtonColors.KILL_SWITCH}
+                    onPress={() => commands.killConnection(connection)}/>
+            </View>
             <View
                 style={{marginTop: 40}}>
                 <Text>Logs: </Text>

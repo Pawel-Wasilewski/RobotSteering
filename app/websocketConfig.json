@@ -1,3 +1,4 @@
 {
-  "websocketRoute": "http://localhost:8080/ws"
+  "websocketRoute": "http://localhost:8080/ws",
+  "robotsWifiSSID": "RaspberryPiRobots"
 }
