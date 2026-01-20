@@ -19,14 +19,17 @@ export default function SendRequestButton({buttonTitle, buttonColor, onPress}: P
             marginLeft: 10,
             marginRight: 10,
             borderRadius: 5,
-            textAlign: "center",
+
             justifyContent: "center",
             alignItems: "center",
         },
         buttonText: {
+            textAlign: "center",
+            textAlignVertical: "center",
             color: "#FFFFFF",
             fontSize: 16,
             fontWeight: "bold",
+            flexShrink: 1,
         },
         buttonClicked: {
             opacity: 0.7,

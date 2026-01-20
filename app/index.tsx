@@ -71,10 +71,33 @@ export default function Index() {
                 justifyContent: "center",
                 alignItems: "center",
             }}>
-            <SendRequestButton
-                buttonTitle={"Forward"}
-                buttonColor={ButtonColors.SERVO_ACTION}
-                onPress={(): boolean => commands.move(MovementTypes.FORWARD)}/>
+            <View
+                style={{
+                    flexDirection: "row",
+                    marginVertical: 20,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}>
+                <SendRequestButton
+                    buttonTitle={"Open Plastic Bin"}
+                    buttonColor={ButtonColors.SERVO_BIN_ACTION}
+                    onPress={(): void => {
+                        commands.openTrashCan(1)
+                    }}/>
+                <SendRequestButton
+                    buttonTitle={"Forward"}
+                    buttonColor={ButtonColors.SERVO_MOVE_ACTION}
+                    onPress={(): void => {
+                        commands.move(MovementTypes.FORWARD)
+                    }}/>
+                <SendRequestButton
+                    buttonTitle={"Open Paper Bin"}
+                    buttonColor={ButtonColors.SERVO_BIN_ACTION}
+                    onPress={(): void => {
+                        commands.openTrashCan(2)
+                    }}/>
+            </View>
+
             <View
                 style={{
                     flexDirection: "row",
@@ -84,21 +107,50 @@ export default function Index() {
                 }}>
                 <SendRequestButton
                     buttonTitle={"Left"}
-                    buttonColor={ButtonColors.SERVO_ACTION}
-                    onPress={() => commands.move(MovementTypes.LEFT)}/>
+                    buttonColor={ButtonColors.SERVO_MOVE_ACTION}
+                    onPress={(): void => {
+                        commands.move(MovementTypes.LEFT)
+                    }}/>
                 <SendRequestButton
                     buttonTitle={"Stop"}
-                    buttonColor={ButtonColors.SERVO_ACTION}
-                    onPress={() => commands.move(MovementTypes.STOP)}/>
+                    buttonColor={ButtonColors.SERVO_MOVE_ACTION}
+                    onPress={(): void => {
+                        commands.move(MovementTypes.STOP)
+                    }}/>
                 <SendRequestButton
                     buttonTitle={"Right"}
-                    buttonColor={ButtonColors.SERVO_ACTION}
-                    onPress={() => commands.move(MovementTypes.RIGHT)}/>
+                    buttonColor={ButtonColors.SERVO_MOVE_ACTION}
+                    onPress={(): void => {
+                        commands.move(MovementTypes.RIGHT)
+                    }}/>
             </View>
-            <SendRequestButton
-                buttonTitle={"Backward"}
-                buttonColor={ButtonColors.SERVO_ACTION}
-                onPress={() => commands.move(MovementTypes.BACKWARD)}/>
+            <View
+                style={{
+                    flexDirection: "row",
+                    marginVertical: 20,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}>
+                <SendRequestButton
+                    buttonTitle={"Open Mixed Bin"}
+                    buttonColor={ButtonColors.SERVO_BIN_ACTION}
+                    onPress={(): void => {commands.openTrashCan(3)}}/>
+                <SendRequestButton
+                    buttonTitle={"Backward"}
+                    buttonColor={ButtonColors.SERVO_MOVE_ACTION}
+                    onPress={(): void => {
+                        commands.move(MovementTypes.BACKWARD)
+                    }}/>
+                <SendRequestButton
+                    buttonTitle={"Close All Bins"}
+                    buttonColor={ButtonColors.SERVO_BIN_ACTION}
+                    onPress={(): void => {
+                        commands.closeTrashCan(1);
+                        commands.closeTrashCan(2);
+                        commands.closeTrashCan(3);
+                    }}/>
+            </View>
+
             <View
                 style={{
                     flexDirection: "row",
