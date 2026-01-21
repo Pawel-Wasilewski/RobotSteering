@@ -1,0 +1,5 @@
+{
+  "websocketRoute": "ws://192.168.0.42:3000/",
+  "robotsWifiSSID": "RaspberryPiRobots",
+  "expoDevelopmentMode": true
+}

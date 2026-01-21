@@ -1,9 +1,11 @@
-import CommandSuiteInterface from "@/app/api/serverCommunication/interfaces/CommandSuiteInterface";
-import EstablishConnection from "@/app/api/serverCommunication/establishConnection";
-import TypeOfCommand from "@/app/api/serverCommunication/interfaces/TypeOfCommand";
-import MovementTypes from "@/app/api/serverCommunication/interfaces/MovementTypes";
-import WSPayloadDTO from "@/app/api/serverCommunication/interfaces/WSPayloadDTO";
-import ConnectionDoesntExist from "@/app/errors/ConnectionDoesntExist";
+import CommandSuiteInterface from "@/api/serverCommunication/interfaces/CommandSuiteInterface";
+import EstablishConnection from "@/api/serverCommunication/establishConnection";
+import TypeOfCommand from "@/api/serverCommunication/interfaces/TypeOfCommand";
+import MovementTypes from "@/api/serverCommunication/interfaces/MovementTypes";
+import WSPayloadDTO from "@/api/serverCommunication/interfaces/WSPayloadDTO";
+import ConnectionDoesntExist from "@/api/errors/ConnectionDoesntExist";
+import WSState from "@/api/serverCommunication/interfaces/WSState";
+
 
 export default class CommandSuite implements CommandSuiteInterface {
     testConnection(): boolean {
@@ -23,8 +25,8 @@ export default class CommandSuite implements CommandSuiteInterface {
         EstablishConnection.getInstance().sendPayload(payloadData);
         return true;
     }
-    killConnection(connectionStatus: boolean): boolean {
-        if (connectionStatus) {
+    killConnection(connectionStatus: WSState): boolean {
+        if (connectionStatus === WSState.CONNECTED) {
             EstablishConnection.getInstance().killCommunication();
             return true;
         }

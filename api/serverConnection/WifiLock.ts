@@ -1,7 +1,6 @@
-import GetPermissions from "@/app/api/serverConnection/helpers/getPermissions";
 import WifiManager from "react-native-wifi-reborn";
 import NetInfo from "@react-native-community/netinfo";
-import ConnectionWithRobotInterrupted from "@/app/errors/ConnectionWithRobotInterrupted";
+import ConnectionWithRobotInterrupted from "@/api/errors/ConnectionWithRobotInterrupted";
 
 export default class WifiLock {
     private static unsubscribe: (() => void) | null = null;

@@ -1,7 +1,8 @@
 import WifiManager from "react-native-wifi-reborn";
-import NoPermissionsGranted from "@/app/errors/NoPermissionsGranted";
-import GetPermissions from "@/app/api/serverConnection/helpers/getPermissions";
-import WifiNotConnected from "@/app/errors/WifiNotConnected";
+import GetPermissions from "@/api/serverConnection/helpers/getPermissions";
+import NoPermissionsGranted from "@/api/errors/NoPermissionsGranted";
+import WifiNotConnected from "@/api/errors/WifiNotConnected";
+
 
 export default class Wifi {
     ssid!: string;

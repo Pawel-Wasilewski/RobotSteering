@@ -1,4 +1,5 @@
-import ErrorNotOverriden from "@/app/errors/errorNotOverriden";
+import ErrorNotOverriden from "@/api/errors/errorNotOverriden";
+
 
 export default class LibNotAccessible extends Error {
     constructor(lib: string | null = null) {

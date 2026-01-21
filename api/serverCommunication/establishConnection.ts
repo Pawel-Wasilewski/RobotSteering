@@ -1,33 +1,46 @@
-import WSPayloadDTO from "@/app/api/serverCommunication/interfaces/WSPayloadDTO";
-import ConnectionWithRobotFailed from "@/app/errors/ConnectionWithRobotFailed";
+import ConnectionWithRobotFailed from "@/api/errors/ConnectionWithRobotFailed";
+import WSPayloadDTO from "@/api/serverCommunication/interfaces/WSPayloadDTO";
+import ConnectionWithRobotInterrupted from "@/api/errors/ConnectionWithRobotInterrupted";
+
 
 export default class EstablishConnection {
     private static instance: EstablishConnection | null = null;
     private socket: WebSocket | null = null;
     private alive: boolean = false;
 
-    private constructor() {}
+    private constructor() {
+    }
 
     public static getInstance(): EstablishConnection {
         if (!EstablishConnection.instance) EstablishConnection.instance = new EstablishConnection();
         return EstablishConnection.instance;
     }
 
-    public connect(url: string): void {
-        this.killCommunication()
+    public connect(url: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            this.killCommunication();
 
-        this.socket = new WebSocket(url);
-        this.alive = true;
+            this.socket = new WebSocket(url);
+            this.alive = false;
 
-        this.socket.onopen = (): void => console.log("Connection opened");
-        this.socket.onclose = (): void => this.killCommunication();
-        this.socket.onerror = (): void => this.killCommunication();
+            this.socket.onopen = () => {
+                console.log("Connection opened");
+                this.alive = true;
+                resolve();
+            };
 
-        this.socket.onmessage = (event: MessageEvent): void => {
-            //TODO handle incoming messages
-            console.log(`Received ${event}`);
-        }
+            this.socket.onerror = (e: Event): void => {
+                this.killCommunication();
+                reject(e);
+            };
+
+            this.socket.onclose = (): void => {
+                this.killCommunication();
+                reject(new ConnectionWithRobotInterrupted());
+            };
+        });
     }
+
 
     public sendPayload(payload: WSPayloadDTO): void {
         if (!this.alive || !this.socket || this.socket.readyState !== WebSocket.OPEN) throw new ConnectionWithRobotFailed();
@@ -45,6 +58,7 @@ export default class EstablishConnection {
 
         this.socket = null;
     }
+
     public isAlive(): boolean {
         return this.alive && this.socket !== null && this.socket.readyState === WebSocket.OPEN;
     }

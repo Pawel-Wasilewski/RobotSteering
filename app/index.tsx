@@ -1,23 +1,25 @@
 import {Text, View} from "react-native";
 import {useEffect, useMemo, useState} from "react";
-import ConnectionWithRobotInterrupted from "@/app/errors/ConnectionWithRobotInterrupted";
-import EstablishConnection from "@/app/api/serverCommunication/establishConnection";
-import Wifi from "@/app/api/serverConnection/Wifi";
-import WifiLock from "@/app/api/serverConnection/WifiLock";
+import LockingSSIDFailed from "@/api/errors/LockingSSIDFailed";
+import EstablishConnection from "@/api/serverCommunication/establishConnection";
+import WifiLock from "@/api/serverConnection/WifiLock";
+import CommandSuite from "@/api/serverCommunication/CommandSuite";
+import ConnectionWithRobotInterrupted from "@/api/errors/ConnectionWithRobotInterrupted";
+import config from "@/api/websocketConfig.json";
+import Wifi from "@/api/serverConnection/Wifi";
 import SendRequestButton from "@/app/comps/SendRequestButton";
-import CommandSuite from "@/app/api/serverCommunication/CommandSuite";
-import LockingSSIDFailed from "@/app/errors/LockingSSIDFailed";
-import MovementTypes from "@/app/api/serverCommunication/interfaces/MovementTypes";
-import config from "./websocketConfig.json";
-import ButtonColors from "@/app/comps/Interfaces/ButtonColors";
+import ButtonColors from "@/api/Interfaces/ButtonColors";
+import MovementTypes from "@/api/serverCommunication/interfaces/MovementTypes";
+import WSState from "@/api/serverCommunication/interfaces/WSState";
 
 export default function Index() {
     const [SSID, setSSID] = useState<string | null>(null);
-    const [connection, setConnection] = useState<boolean>(false);
+    const [connection, setConnection] = useState<WSState>(WSState.DISCONNECTED);
     const successfullyConnectedMessage: string = "Connected to robot's WiFi network.";
     const commands: CommandSuite = useMemo((): CommandSuite => new CommandSuite(), []);
     const webSocketURL: string = config.websocketRoute;
     const robotsWifi: string = config.robotsWifiSSID;
+    const expoDevelopmentMode: boolean = Boolean(config.expoDevelopmentMode);
 
 
     useEffect((): () => void => {
@@ -26,42 +28,65 @@ export default function Index() {
         const killProcess: () => void = (): void => {
             console.error(new ConnectionWithRobotInterrupted().message);
             EstablishConnection.getInstance().killCommunication();
-            setConnection(false);
+            setConnection(WSState.DISCONNECTED);
         }
 
-        // INITIALIZATION
-        Wifi.connect(robotsWifi)
-            .then((wifiInstance: Wifi): void => {
-                if (killGuard) return;
-                if (!wifiInstance.isConnected) {
-                    setSSID(`Not connected to expected SSID. Current: ${wifiInstance.ssid}`);
-                    return;
-                }
-                setSSID(successfullyConnectedMessage);
+        if (expoDevelopmentMode) {
+            // EXPO GO DEVELOPMENT MODE - SKIP WIFI STEPS - NOT POSSIBLE IN EXPO GO
+            setConnection(WSState.CONNECTING);
+            EstablishConnection.getInstance().connect(webSocketURL)
+                .then((): void => {
+                    setConnection(WSState.CONNECTED);
+                    setSSID(successfullyConnectedMessage + " (Expo Go Development Mode)");
+                })
+                .catch((): void => {
+                    setConnection(WSState.DISCONNECTED)
+                    setSSID("Failed to connect: Connection interrupted");
+                })
 
-                // LOCK IT
-                WifiLock.lockToSSID(robotsWifi, killProcess)
-                    .then((): void => {
-                        // ESTABLISH CONNECTION
-                        EstablishConnection.getInstance().connect(webSocketURL);
-                        setConnection(true);
-                    })
-                    .catch((): void => {
-                        throw new LockingSSIDFailed()
-                    });
-            })
-            .catch((error: Error): void => {
-                if (!killGuard) setSSID("Failed to connect: " + error.message);
-            });
+        } else {
+            // INITIALIZATION
+            Wifi.connect(robotsWifi)
+                .then((wifiInstance: Wifi): void => {
+                    if (killGuard) return;
+                    if (!wifiInstance.isConnected) {
+                        setSSID(`Not connected to expected SSID. Current: ${wifiInstance.ssid}`);
+                        return;
+                    }
+                    setSSID(successfullyConnectedMessage);
 
+                    // LOCK IT
+                    WifiLock.lockToSSID(robotsWifi, killProcess)
+                        .then((): void => {
+                            // ESTABLISH CONNECTION
+                            setConnection(WSState.CONNECTING);
+                            EstablishConnection.getInstance().connect(webSocketURL)
+                                .then((): void => {
+                                    setConnection(WSState.CONNECTED)
+                                })
+                                .catch((): void => {
+                                    setConnection(WSState.DISCONNECTED)
+                                    setSSID("Failed to connect: Connection interrupted");
+                                })
+                        })
+                        .catch((): void => {
+                            throw new LockingSSIDFailed()
+                        });
+                })
+                .catch((error: Error): void => {
+                    if (!killGuard) setSSID("Failed to connect: " + error.message);
+                });
+
+
+        }
         // CLEANUP
         return (): void => {
             killGuard = true;
             WifiLock.releaseLock();
             EstablishConnection.getInstance().killCommunication();
-            setConnection(false);
+            setConnection(WSState.DISCONNECTED);
         };
-    }, [webSocketURL, robotsWifi]);
+    }, [webSocketURL, robotsWifi, expoDevelopmentMode]);
 
 
     return (
@@ -134,7 +159,9 @@ export default function Index() {
                 <SendRequestButton
                     buttonTitle={"Open Mixed Bin"}
                     buttonColor={ButtonColors.SERVO_BIN_ACTION}
-                    onPress={(): void => {commands.openTrashCan(3)}}/>
+                    onPress={(): void => {
+                        commands.openTrashCan(3)
+                    }}/>
                 <SendRequestButton
                     buttonTitle={"Backward"}
                     buttonColor={ButtonColors.SERVO_MOVE_ACTION}
@@ -171,7 +198,7 @@ export default function Index() {
                 style={{marginTop: 40}}>
                 <Text>Logs: </Text>
                 <Text>{SSID}</Text>
-                <Text>{connection ? "WebSocket Connection: Alive" : "WebSocket Connection: Not Established"}</Text>
+                <Text>{connection === WSState.CONNECTED ? "WebSocket Connection: Alive" : "WebSocket Connection: Not Established"}</Text>
             </View>
 
         </View>

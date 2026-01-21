@@ -1,4 +1,5 @@
-import LibNotAccessible from "@/app/errors/LibNoAccesable";
+import LibNotAccessible from "@/api/errors/LibNoAccesable";
+
 
 export default class GetPermissions {
     static async requestForegroundPermissionsAsync(): Promise<any> {

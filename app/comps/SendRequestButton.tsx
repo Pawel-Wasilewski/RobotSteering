@@ -1,5 +1,5 @@
 import {Pressable, StyleSheet, Text} from "react-native";
-import ButtonColors from "@/app/comps/Interfaces/ButtonColors";
+import ButtonColors from "@/api/Interfaces/ButtonColors";
 
 
 interface Props {
